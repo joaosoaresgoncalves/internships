@@ -12,11 +12,11 @@ export async function GET() {
       success: true, 
       message: `Database connection successful. Found ${internshipCount} internships.` 
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Database error:', error);
     return NextResponse.json({ 
       success: false, 
-      error: error.message 
+      error: error?.message || 'Unknown database error' 
     }, { status: 500 });
   }
 } 
