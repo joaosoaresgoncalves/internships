@@ -8,6 +8,7 @@ import prisma from "@/lib/prisma"
 
 async function getInternships() {
   try {
+    console.log("Fetching internships from database...")
     const internships = await prisma.internship.findMany({
       include: {
         company: true,
@@ -17,8 +18,10 @@ async function getInternships() {
       },
     })
     
+    console.log("Raw internships data:", JSON.stringify(internships, null, 2))
+    
     // Transform the data to match the expected interface
-    return internships.map(internship => ({
+    const transformedInternships = internships.map(internship => ({
       ...internship,
       company: {
         ...internship.company,
@@ -26,6 +29,9 @@ async function getInternships() {
         website: internship.company.website || undefined  // Convert null to undefined
       }
     }))
+    
+    console.log("Number of internships after transformation:", transformedInternships.length)
+    return transformedInternships
   } catch (error) {
     console.error("Error fetching internships:", error)
     return []
