@@ -1,10 +1,35 @@
 import { Search } from "lucide-react"
-import InternshipList from "../internship-list"
+import InternshipList from "@/components/internship-list"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Link from "next/link"
+import { Suspense } from "react"
+import prisma from "@/lib/prisma"
 
-export default function InternshipsPage() {
+async function getInternships() {
+  try {
+    const internships = await prisma.internship.findMany({
+      include: {
+        company: true,
+      },
+      orderBy: {
+        postedAt: "desc",
+      },
+    })
+    console.log("Fetched internships:", internships) // Debug log
+    return internships
+  } catch (error) {
+    console.error("Error fetching internships:", error)
+    return []
+  }
+}
+
+export default async function InternshipsPage() {
+  const internships = await getInternships()
+
+  // Debug log
+  console.log("Number of internships:", internships.length)
+
   return (
     <div className="min-h-screen flex flex-col">
       <header className="border-b sticky top-0 bg-background z-10">
@@ -156,7 +181,16 @@ export default function InternshipsPage() {
                   </div>
                 </div>
                 <div className="overflow-x-auto">
-                  <InternshipList />
+                  <Suspense fallback={<div>Loading...</div>}>
+                    {internships.length > 0 ? (
+                      <InternshipList internships={internships} />
+                    ) : (
+                      <div className="text-center py-12">
+                        <h2 className="text-xl font-semibold mb-2">No internships found</h2>
+                        <p className="text-muted-foreground">Try seeding the database or checking your database connection.</p>
+                      </div>
+                    )}
+                  </Suspense>
                 </div>
               </div>
             </div>
