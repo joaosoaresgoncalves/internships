@@ -16,8 +16,16 @@ async function getInternships() {
         postedAt: "desc",
       },
     })
-    console.log("Fetched internships:", internships) // Debug log
-    return internships
+    
+    // Transform the data to match the expected interface
+    return internships.map(internship => ({
+      ...internship,
+      company: {
+        ...internship.company,
+        logo: internship.company.logo || undefined,  // Convert null to undefined
+        website: internship.company.website || undefined  // Convert null to undefined
+      }
+    }))
   } catch (error) {
     console.error("Error fetching internships:", error)
     return []

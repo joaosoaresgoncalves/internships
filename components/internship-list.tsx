@@ -17,8 +17,8 @@ interface Internship {
   url: string
   company: {
     name: string
-    logo?: string
-    website?: string
+    logo?: string | null
+    website?: string | null
   }
 }
 
